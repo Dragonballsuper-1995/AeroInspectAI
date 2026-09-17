@@ -53,3 +53,6 @@ eeprom.bin
 Thumbs.db
 .vscode/
 .idea/
+
+# Agents files
+AGENTS.md
