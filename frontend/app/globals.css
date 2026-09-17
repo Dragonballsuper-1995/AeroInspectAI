@@ -30,3 +30,67 @@
 @media (max-width: 1180px) { .result-grid { grid-template-columns: 1fr; } }
 @media (max-width: 800px) { .live-image-wrap { height: 320px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+
+/* Responsive review console: keep the primary action and live evidence in view. */
+html, body { overflow-x: hidden; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+@media (min-width: 801px) {
+  .sidebar { height: 100dvh; max-height: 100dvh; overflow-y: auto; position: sticky; top: 0; }
+  .sidebar::-webkit-scrollbar { width: 5px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 8px; }
+}
+.page-content { padding: clamp(22px, 2.3vw, 34px); }
+.page-header { margin-bottom: 20px; }
+.page-header p { max-width: 62ch; }
+.panel { padding: clamp(16px, 1.5vw, 21px); }
+.system-layout { align-items: stretch; display: grid; gap: 15px; grid-template-columns: minmax(0, 1fr) minmax(360px, 1.08fr); }
+.telemetry-panel { min-width: 0; }
+.telemetry-panel .panel-heading { margin-bottom: 14px; }
+.telemetry-panel .system-grid { gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.telemetry-panel .system-card { padding: 13px; }
+.telemetry-panel .system-card h3 { margin: 12px 0 4px; }
+.telemetry-panel .system-card > small { min-height: 0; }
+.telemetry-panel .system-update { margin-top: 11px; padding-top: 8px; }
+.simulation-frame-panel { display: flex; flex-direction: column; margin-top: 0; min-width: 0; }
+.simulation-frame-panel .panel-heading { margin-bottom: 12px; }
+.simulation-frame-wrap { aspect-ratio: 4 / 3; min-height: 0; }
+.simulation-frame { height: 100%; max-height: none; width: 100%; }
+.simulation-frame-panel .muted-copy { margin-top: 8px; }
+.sortable-header { align-items: center; background: transparent; border: 0; color: inherit; display: inline-flex; gap: 5px; padding: 0; text-align: left; }
+.sortable-header:hover, .sortable-header.active { color: var(--blue); }
+.sortable-header svg { opacity: .6; }
+.sortable-header.active svg { opacity: 1; }
+.upload-preview { background: var(--bg); border: 1px solid var(--border); border-radius: 5px; display: block; height: 205px; max-width: 100%; object-fit: contain; width: 100%; }
+.file-preview { width: min(100%, 430px); }
+.file-preview small { margin-top: 2px; }
+
+@media (max-width: 1180px) {
+  .system-layout { grid-template-columns: 1fr; }
+  .simulation-frame-panel { margin-top: 0; }
+}
+@media (max-width: 800px) {
+  .sidebar { height: 100dvh; max-height: 100dvh; overflow-y: auto; padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+  .topbar { height: 58px; }
+  .page-content { padding: 20px 16px; }
+  .page-header { margin-bottom: 16px; }
+  .system-layout { gap: 12px; }
+  .system-banner { gap: 12px; padding: 14px; }
+  .system-banner h2 { font-size: 15px; }
+  .system-banner p { line-height: 1.4; }
+  .telemetry-panel .system-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 800px) {
+  .telemetry-panel .system-grid { grid-template-columns: 1fr; }
+  .simulation-frame-wrap { aspect-ratio: 4 / 3; }
+  .history-table thead { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 0 12px 5px; }
+  .history-table thead tr { display: contents; }
+  .history-table thead th { font-size: 9px; padding: 6px; }
+  .history-table tbody { display: grid; gap: 8px; padding: 0 12px 12px; }
+  .history-table tbody tr { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; display: grid; grid-template-columns: 1fr 1fr; padding: 6px; }
+  .history-table tbody td { align-items: baseline; border-top: 0; display: flex; font-size: 11px; gap: 8px; justify-content: space-between; padding: 6px; white-space: normal; }
+  .history-table tbody td::before { color: var(--faint); content: attr(data-label); flex: 0 0 auto; font-family: "Space Grotesk", sans-serif; font-size: 9px; }
+  .history-table tbody td:first-child { grid-column: 1 / -1; }
+  .history-table tbody td:first-child strong { font-size: 11px; }
+  .history-table tbody td:nth-child(3) { overflow-wrap: anywhere; }
+  .table-footer { padding: 11px 13px; }
+}

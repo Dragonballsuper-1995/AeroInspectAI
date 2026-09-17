@@ -4,6 +4,8 @@ import {
   Activity,
   AlertTriangle,
   ArrowUpRight,
+  ArrowDown,
+  ArrowUp,
   BarChart3,
   Bot,
   Box,
@@ -172,14 +174,18 @@ function Dashboard({ system, router }: { system: SystemStatus | null; router: Re
 function NewInspection({ router, backendReady }: { router: ReturnType<typeof useRouter>; backendReady: boolean }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [threshold, setThreshold] = useState(0.25);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  useEffect(() => () => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+  }, [previewUrl]);
   const choose = (candidate?: File) => {
     if (!candidate) return;
     if (!["image/jpeg", "image/png", "image/webp"].includes(candidate.type)) return setError("Choose a JPG, PNG, or WEBP image.");
     if (candidate.size > 20 * 1024 * 1024) return setError("Images must be 20 MB or smaller.");
-    setError(""); setFile(candidate);
+    setError(""); setFile(candidate); setPreviewUrl(URL.createObjectURL(candidate));
   };
   const run = async () => {
     if (!file) return;
@@ -194,7 +200,7 @@ function NewInspection({ router, backendReady }: { router: ReturnType<typeof use
     }
   };
   return <div className="new-inspection-grid">
-    <section className="panel upload-panel"><div className="panel-heading"><div><span className="section-kicker">Step 01</span><h2>Select an inspection image</h2></div><span className="tag tag-blue">Local processing</span></div><button className={`dropzone ${file ? "has-file" : ""}`} onClick={() => inputRef.current?.click()}>{file ? <><ImageIcon size={32} /><strong>{file.name}</strong><span>{(file.size / 1024 / 1024).toFixed(2)} MB · ready</span></> : <><div className="upload-icon"><Upload size={21} /></div><strong>Choose a structural inspection image</strong><span>JPG, PNG, or WEBP</span><small>Maximum 20 MB</small></>}</button><input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(event) => choose(event.target.files?.[0])} />{error && <ErrorBanner message={error} />}</section>
+    <section className="panel upload-panel"><div className="panel-heading"><div><span className="section-kicker">Step 01</span><h2>Select an inspection image</h2></div><span className="tag tag-blue">Local processing</span></div><button type="button" className={`dropzone ${file ? "has-file" : ""}`} onClick={() => inputRef.current?.click()}>{file && previewUrl ? <div className="file-preview"><img className="upload-preview" src={previewUrl} alt={`Preview of ${file.name}`} /><strong>{file.name}</strong><span>{(file.size / 1024 / 1024).toFixed(2)} MB · ready</span><small>Choose another image to replace this preview</small></div> : <><div className="upload-icon"><Upload size={21} /></div><strong>Choose a structural inspection image</strong><span>JPG, PNG, or WEBP</span><small>Maximum 20 MB</small></>}</button><input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(event) => choose(event.target.files?.[0])} />{error && <ErrorBanner message={error} />}</section>
     <section className="panel config-panel"><div className="panel-heading"><div><span className="section-kicker">Step 02</span><h2>Inference configuration</h2></div><Gauge size={17} /></div><label>Confidence threshold <output>{threshold.toFixed(2)}</output><input className="range" type="range" min="0" max="0.9" step="0.05" value={threshold} onChange={(event) => setThreshold(Number(event.target.value))} /></label><div className="detail-list"><Detail label="Model" value="YOLOv8n-Seg / EXP001" /><Detail label="Output" value="Boxes + segmentation masks" /><Detail label="Storage" value="Local filesystem" /></div><div className="notice notice-amber"><AlertTriangle size={15} /><span>Results are visual defect detections, not a structural safety certification.</span></div><div className="config-footer"><small>{backendReady ? "Backend and model ready" : "Backend is offline"}</small><button className="button button-primary" disabled={!file || busy || !backendReady} onClick={run}>{busy ? <><Activity size={16} />Inspecting…</> : <><Play size={16} />Run inspection</>}</button></div></section>
   </div>;
 }
@@ -224,10 +230,52 @@ function InspectionResult({ inspectionId, router }: { inspectionId?: string; rou
 function InspectionHistory({ router }: { router: ReturnType<typeof useRouter> }) {
   const [records, setRecords] = useState<Inspection[]>([]);
   const [query, setQuery] = useState("");
+  const [sortKey, setSortKey] = useState<InspectionSortKey>("date");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("descending");
   const [error, setError] = useState("");
   useEffect(() => { inspectionService.list().then(setRecords).catch((reason: Error) => setError(reason.message)); }, []);
-  const filtered = useMemo(() => records.filter((item) => `${item.id} ${item.name}`.toLowerCase().includes(query.toLowerCase())), [records, query]);
-  return <section className="panel history-panel">{error && <ErrorBanner message={error} />}<div className="filter-bar"><div className="search-input"><Search size={16} /><input placeholder="Search inspections" value={query} onChange={(event) => setQuery(event.target.value)} /></div></div><div className="table-wrap"><table className="history-table"><thead><tr><th>Inspection ID</th><th>Date</th><th>Image</th><th>Cracks</th><th>Processing</th><th>Status</th></tr></thead><tbody>{filtered.map((inspection) => <tr key={inspection.id} onClick={() => router.push(`/inspection/${inspection.id}`)}><td><strong>{inspection.id}</strong></td><td>{inspection.date}</td><td>{inspection.imageName}</td><td>{inspection.cracks}</td><td>{inspection.processingTimeMs ? `${inspection.processingTimeMs.toFixed(0)} ms` : "—"}</td><td><span className="status-text"><span className="status-dot ready" />{inspection.status}</span></td></tr>)}</tbody></table></div>{!error && filtered.length === 0 && <div className="empty-state"><ImageIcon size={23} /><strong>No saved inspections</strong><span>Run the first real inspection to populate history.</span></div>}<div className="table-footer"><span>{filtered.length} live backend records</span></div></section>;
+  const filtered = useMemo(() => {
+    const searched = records.filter((item) => `${item.id} ${item.name} ${item.imageName}`.toLowerCase().includes(query.toLowerCase()));
+    return [...searched].sort((left, right) => compareInspections(left, right, sortKey, sortDirection));
+  }, [records, query, sortDirection, sortKey]);
+  const toggleSort = (key: InspectionSortKey) => {
+    if (sortKey === key) setSortDirection((direction) => direction === "ascending" ? "descending" : "ascending");
+    else { setSortKey(key); setSortDirection("ascending"); }
+  };
+  return <section className="panel history-panel">{error && <ErrorBanner message={error} />}<div className="filter-bar"><div className="search-input"><Search size={16} /><input placeholder="Search inspections" value={query} onChange={(event) => setQuery(event.target.value)} /></div></div><div className="table-wrap"><table className="history-table"><thead><tr><SortableHeader label="Inspection ID" column="id" active={sortKey} direction={sortDirection} onSort={toggleSort} /><SortableHeader label="Date" column="date" active={sortKey} direction={sortDirection} onSort={toggleSort} /><SortableHeader label="Image" column="imageName" active={sortKey} direction={sortDirection} onSort={toggleSort} /><SortableHeader label="Cracks" column="cracks" active={sortKey} direction={sortDirection} onSort={toggleSort} /><SortableHeader label="Processing" column="processingTimeMs" active={sortKey} direction={sortDirection} onSort={toggleSort} /><SortableHeader label="Status" column="status" active={sortKey} direction={sortDirection} onSort={toggleSort} /></tr></thead><tbody>{filtered.map((inspection) => <tr key={inspection.id} onClick={() => router.push(`/inspection/${inspection.id}`)}><td data-label="Inspection ID"><strong>{inspection.id}</strong></td><td data-label="Date">{inspection.date}</td><td data-label="Image">{inspection.imageName}</td><td data-label="Cracks">{inspection.cracks}</td><td data-label="Processing">{inspection.processingTimeMs ? `${inspection.processingTimeMs.toFixed(0)} ms` : "—"}</td><td data-label="Status"><span className="status-text"><span className="status-dot ready" />{inspection.status}</span></td></tr>)}</tbody></table></div>{!error && filtered.length === 0 && <div className="empty-state"><ImageIcon size={23} /><strong>No saved inspections</strong><span>Run the first real inspection to populate history.</span></div>}<div className="table-footer"><span>{filtered.length} live backend records</span></div></section>;
+}
+
+type InspectionSortKey = "id" | "date" | "imageName" | "cracks" | "processingTimeMs" | "status";
+type SortDirection = "ascending" | "descending";
+
+function compareInspections(left: Inspection, right: Inspection, key: InspectionSortKey, direction: SortDirection) {
+  const leftValue = left[key];
+  const rightValue = right[key];
+  const leftMissing = leftValue === null || leftValue === undefined || leftValue === "";
+  const rightMissing = rightValue === null || rightValue === undefined || rightValue === "";
+  if (leftMissing || rightMissing) {
+    if (leftMissing && rightMissing) return 0;
+    return leftMissing ? 1 : -1;
+  }
+  let comparison = 0;
+  if (key === "cracks" || key === "processingTimeMs") comparison = Number(leftValue) - Number(rightValue);
+  else if (key === "date") comparison = parseInspectionDate(String(leftValue)) - parseInspectionDate(String(rightValue));
+  else comparison = String(leftValue).localeCompare(String(rightValue), undefined, { sensitivity: "base" });
+  return direction === "ascending" ? comparison : -comparison;
+}
+
+function parseInspectionDate(value: string) {
+  const parsed = Date.parse(value);
+  if (!Number.isNaN(parsed)) return parsed;
+  const localized = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4}),?\s*(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  if (!localized) return 0;
+  const [, day, month, year, hour, minute, second = "0"] = localized;
+  return new Date(Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute), Number(second)).getTime();
+}
+
+function SortableHeader({ label, column, active, direction, onSort }: { label: string; column: InspectionSortKey; active: InspectionSortKey; direction: SortDirection; onSort: (column: InspectionSortKey) => void }) {
+  const selected = active === column;
+  return <th aria-sort={selected ? direction : "none"}><button type="button" className={`sortable-header ${selected ? "active" : ""}`} onClick={() => onSort(column)}>{label}{selected ? direction === "ascending" ? <ArrowUp size={13} /> : <ArrowDown size={13} /> : <ArrowDown size={12} />}</button></th>;
 }
 
 function Analytics() {
@@ -290,20 +338,22 @@ function SystemPage({ system }: { system: SystemStatus | null }) {
       {isRunning ? <button className="button button-quiet" disabled={busy} onClick={stopMission}><X size={15} />{busy ? "Requesting…" : "Abort & RTL"}</button> : <button className="button button-primary" disabled={!isReady || busy} onClick={requestMission}><Play size={15} />{busy ? "Queueing…" : "Start inspection mission"}</button>}
     </div>
     {!isReady && !isRunning && <div className="notice notice-blue"><Wifi size={15} /><span>Start the WSL simulation stack first. The dashboard will remain unavailable until the controller registers its camera and MAVLink connection.</span></div>}
-    <div className="system-grid">
-      <SystemCard name="Backend" status={system?.backend.status ?? "Offline"} value="FastAPI :8000" note={system?.model.loaded ? "EXP001 model loaded" : "Start backend"} icon={Wifi} />
-      <SystemCard name="Simulator" status={simulatorStatus} value={simulation?.mission_state ?? "IDLE"} note={simulation?.waypoint_id ? `Waypoint ${simulation.waypoint_id}` : "Gazebo / SITL controller"} icon={Navigation} />
-      <SystemCard name="Flight mode" status={isRunning ? "running" : "Standby"} value={telemetry?.flight_mode ?? "—"} note={telemetry?.armed ? "Armed" : "Not armed"} icon={Gauge} />
-      <SystemCard name="Altitude" status={isRunning ? "running" : "Standby"} value={`${maybe(telemetry?.relative_altitude_m)} m`} note={`Speed ${maybe(telemetry?.ground_speed_m_s)} m/s`} icon={Activity} />
-      <SystemCard name="Local NED" status={isRunning ? "running" : "Standby"} value={`N ${maybe(telemetry?.north_m)} · E ${maybe(telemetry?.east_m)}`} note={`D ${maybe(telemetry?.down_m)} m`} icon={Target} />
-      <SystemCard name="Captured frames" status={simulation?.captures_completed ? "Ready" : "Standby"} value={String(simulation?.captures_completed ?? 0)} note={simulation?.latest_inspection_id ?? "No inspection record yet"} icon={Camera} />
-    </div>
-    <section className="panel simulation-frame-panel">
+    <div className="system-layout">
+      <section className="panel telemetry-panel"><div className="panel-heading"><div><span className="section-kicker">Flight telemetry</span><h2>Live vehicle state</h2></div><span className="tag tag-blue">SITL</span></div><div className="system-grid">
+        <SystemCard name="Backend" status={system?.backend.status ?? "Offline"} value="FastAPI :8000" note={system?.model.loaded ? "EXP001 model loaded" : "Start backend"} icon={Wifi} />
+        <SystemCard name="Simulator" status={simulatorStatus} value={simulation?.mission_state ?? "IDLE"} note={simulation?.waypoint_id ? `Waypoint ${simulation.waypoint_id}` : "Gazebo / SITL controller"} icon={Navigation} />
+        <SystemCard name="Flight mode" status={isRunning ? "running" : "Standby"} value={telemetry?.flight_mode ?? "—"} note={telemetry?.armed ? "Armed" : "Not armed"} icon={Gauge} />
+        <SystemCard name="Altitude" status={isRunning ? "running" : "Standby"} value={`${maybe(telemetry?.relative_altitude_m)} m`} note={`Speed ${maybe(telemetry?.ground_speed_m_s)} m/s`} icon={Activity} />
+        <SystemCard name="Local NED" status={isRunning ? "running" : "Standby"} value={`N ${maybe(telemetry?.north_m)} · E ${maybe(telemetry?.east_m)}`} note={`D ${maybe(telemetry?.down_m)} m`} icon={Target} />
+        <SystemCard name="Captured frames" status={simulation?.captures_completed ? "Ready" : "Standby"} value={String(simulation?.captures_completed ?? 0)} note={simulation?.latest_inspection_id ?? "No inspection record yet"} icon={Camera} />
+      </div></section>
+      <section className="panel simulation-frame-panel">
       <div className="panel-heading"><div><span className="section-kicker">Onboard camera</span><h2>Latest settled inspection frame</h2></div><span className={`tag ${frameUrl ? "tag-green" : "tag-muted"}`}>{frameUrl ? "Captured" : "Awaiting camera"}</span></div>
       <div className="simulation-frame-wrap">{frameUrl ? <img className="simulation-frame" src={`${frameUrl}?t=${encodeURIComponent(simulation?.updated_at ?? "")}`} alt="Latest simulated drone camera capture" /> : <div className="empty-state"><Camera size={23} /><strong>Camera frame unavailable</strong><span>Frames appear after a completed waypoint capture.</span></div>}</div>
       <p className="muted-copy">Frames originate from the simulated drone camera at each settled waypoint. The blank virtual wall carries five crack-photo panels as scene materials; the dashboard receives the complete rendered wall view, never a direct dataset upload.</p>
       {simulation?.latest_inspection_id && <button className="text-button" onClick={() => window.location.assign(`/inspection/${simulation.latest_inspection_id}`)}>Open linked inspection <ArrowUpRight size={14} /></button>}
     </section>
+    </div>
   </>;
 }
 
