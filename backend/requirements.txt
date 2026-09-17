@@ -1,0 +1,15 @@
+# Versions match the validated repository-level Python 3.14 / CUDA 12.8 environment.
+fastapi==0.141.1
+uvicorn[standard]==0.53.0
+websockets>=14,<17
+python-multipart==0.0.32
+pydantic==2.13.5
+pydantic-settings==2.15.0
+ultralytics==8.4.152
+torch==2.10.0
+torchvision==0.25.0
+opencv-python==5.0.0.93
+Pillow==12.3.0
+numpy==2.5.2
+httpx==0.28.1
+pytest>=8.0,<10

@@ -1,0 +1,28 @@
+mission:
+  takeoff_altitude_m: 3.0
+  approach_ned_m: [-2.0, 7.0, -3.0]
+  inspection_waypoints_ned_m:
+    - [-2.0, 7.0, -3.0]
+    - [-1.0, 7.0, -3.0]
+    - [0.0, 7.0, -3.0]
+    - [1.0, 7.0, -3.0]
+    - [2.0, 7.0, -3.0]
+  yaw_degrees: 90.0
+  arrival_radius_m: 0.65
+  settle_seconds: 2.0
+  arrival_timeout_seconds: 90
+connection:
+  # Direct TCP MAVLink from the local ArduPilot SITL process.
+  mavlink: "tcp:127.0.0.1:5760"
+  backend_url: "http://localhost:8000"
+camera:
+  # Direct Gazebo Transport topic for the Iris gimbal sensor in this world.
+  topic: "/world/aeroinspect_inspection/model/aeroinspect_iris/model/gimbal/link/pitch_link/sensor/camera/image"
+  frame: "camera_optical_frame"
+  output_width: 640
+  output_height: 480
+  horizontal_fov_degrees: 70.0
+  expected_fps: 10
+  # Captures are always obtained from this live Gazebo Transport sensor. The
+  # dataset-derived images are scene materials on the virtual wall, never a
+  # direct camera-payload fallback.

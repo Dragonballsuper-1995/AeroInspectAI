@@ -1,0 +1,34 @@
+# Local environments and dependency trees
+.venv/
+node_modules/
+frontend/node_modules/
+frontend/.next/
+.next/
+
+# Runtime state, logs, caches, and generated uploads
+.aeroinspect/
+.pytest_cache/
+backend/storage/
+backend/logs/
+simulation/logs/
+/logs/
+__pycache__/
+*.pyc
+
+# Large/generated ML assets are preserved locally but not versioned here.
+datasets/
+runs/
+weights/
+audit_results/
+dataset_audit.json
+*.pt
+*.onnx
+*.tlog
+*.tlog.raw
+eeprom.bin
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

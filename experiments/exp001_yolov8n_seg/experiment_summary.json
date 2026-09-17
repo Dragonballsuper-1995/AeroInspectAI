@@ -1,0 +1,28 @@
+{
+  "experiment": "Experiment 001",
+  "completed_at": "2026-09-14T20:32:16.240237",
+  "model": "yolov8n-seg.pt",
+  "dataset": "D:\\Projects\\AeroInspectAI\\datasets\\aeroinspect_crack_v1\\aeroinspect_crack_v1.yaml",
+  "training_seconds": 9247.001207113266,
+  "training_hours": 2.5686114464203516,
+  "best_model": "D:\\Projects\\AeroInspectAI\\experiments\\exp001_yolov8n_seg\\runs\\baseline\\weights\\best.pt",
+  "last_model": "D:\\Projects\\AeroInspectAI\\experiments\\exp001_yolov8n_seg\\runs\\baseline\\weights\\last.pt",
+  "gpu": {
+    "torch_version": "2.10.0+cu128",
+    "cuda_available": true,
+    "cuda_version": "12.8",
+    "gpu_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "gpu_memory_gb": 5.99658203125,
+    "device": "cuda:0"
+  },
+  "final_gpu_state": {
+    "timestamp": "2026/09/14 20:32:16.226",
+    "memory_used_mb": 701.0,
+    "memory_total_mb": 6141.0,
+    "gpu_utilization_percent": 0.0,
+    "temperature_c": 46.0,
+    "power_w": 18.32
+  },
+  "validation_run_directory": "D:\\Projects\\AeroInspectAI\\experiments\\exp001_yolov8n_seg\\runs\\baseline",
+  "test_evaluation_completed": true
+}

@@ -1,0 +1,11 @@
+# All flight coordinates are local NED. Gazebo world geometry is ENU.
+world:
+  name: aeroinspect_inspection
+  wall_enu_m: [10.0, 0.0, 2.0]
+vehicle:
+  model: iris_with_gimbal
+  camera_topic: /world/aeroinspect_inspection/model/aeroinspect_iris/model/gimbal/link/pitch_link/sensor/camera/image
+  camera_output: 640x480@10fps
+  camera_horizontal_fov_degrees: 70
+backend:
+  url: http://localhost:8000

@@ -1,0 +1,25 @@
+{
+  "experiment": "Experiment 001",
+  "description": "AeroInspect AI baseline single-class concrete crack instance segmentation",
+  "created_at": "2026-09-14T17:57:31.964066",
+  "model": "yolov8n-seg.pt",
+  "dataset_yaml": "D:\\Projects\\AeroInspectAI\\datasets\\aeroinspect_crack_v1\\aeroinspect_crack_v1.yaml",
+  "epochs": 100,
+  "image_size": 512,
+  "batch_size": 4,
+  "device": 0,
+  "seed": 42,
+  "workers": 4,
+  "amp": true,
+  "patience": 25,
+  "save_period": 10,
+  "cache": false,
+  "gpu": {
+    "torch_version": "2.10.0+cu128",
+    "cuda_available": true,
+    "cuda_version": "12.8",
+    "gpu_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "gpu_memory_gb": 5.99658203125,
+    "device": "cuda:0"
+  }
+}

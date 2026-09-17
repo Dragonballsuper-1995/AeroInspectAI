@@ -1,0 +1,11 @@
+# AeroInspect AI
+# Experiment 001 — Concrete Crack Instance Segmentation
+
+path: D:/Projects/AeroInspectAI/datasets/crack-seg
+
+train: images/train
+val: images/val
+test: images/test
+
+names:
+  0: crack

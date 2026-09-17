@@ -1,0 +1,6 @@
+# Installed inside WSL only; FastAPI stays in the Windows virtual environment.
+pymavlink>=2.4.49,<3
+PyYAML>=6.0,<7
+requests>=2.31,<3
+future>=1.0,<2
+opencv-python-headless==5.0.0.93
