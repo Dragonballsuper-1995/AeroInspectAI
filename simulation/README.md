@@ -29,7 +29,7 @@ Every submitted capture is a fresh Gazebo Transport RGB frame from the drone's s
 
 The dashboard never substitutes fake telemetry. When the stack is unavailable it shows `SIMULATION_UNAVAILABLE`; MAVLink, camera, backend, and inference failures appear as their explicit error codes.
 
-The launcher uses XWayland (`QT_QPA_PLATFORM=xcb`, `WAYLAND_DISPLAY` unset). The server and simulated camera use Ogre2, while the separate observer window uses a lightweight Ogre GUI configuration. This avoids the stock Ogre2 GUI's `currentGLContext` failure seen in WSLg COPY MODE. The System page also shows the latest rendered camera frame, live NED telemetry, mission state, and linked inspection record.
+The launcher uses XWayland (`QT_QPA_PLATFORM=xcb`, `WAYLAND_DISPLAY` unset) and software Mesa (`LIBGL_ALWAYS_SOFTWARE=1`) when WSLg reports COPY MODE. The server, simulated camera, and stock Harmonic observer window all use Ogre2, so the GUI scene and camera scene stay consistent. The System page also shows the latest rendered camera frame, live NED telemetry, mission state, and linked inspection record.
 
 ## Validation and troubleshooting
 

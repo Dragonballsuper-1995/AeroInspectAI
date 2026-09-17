@@ -11,11 +11,13 @@ mkdir -p "${LOG_DIR}"
 export GZ_SIM_SYSTEM_PLUGIN_PATH="${SIM_HOME}/ardupilot_gazebo/build${GZ_SIM_SYSTEM_PLUGIN_PATH:+:${GZ_SIM_SYSTEM_PLUGIN_PATH}}"
 export GZ_SIM_RESOURCE_PATH="${REPO_ROOT}/simulation/gazebo/models:${SIM_HOME}/ardupilot_gazebo/models${GZ_SIM_RESOURCE_PATH:+:${GZ_SIM_RESOURCE_PATH}}"
 export PYTHONPATH="${REPO_ROOT}/simulation${PYTHONPATH:+:${PYTHONPATH}}"
-# Use XWayland for Qt under WSLg. The simulation server and drone camera use
-# Ogre2. The observer GUI uses the compatible Ogre client config below because
-# WSLg on this host cannot create the stock Ogre2 GUI GLX context (COPY MODE).
+# Use XWayland for Qt under WSLg. The simulation server, drone camera, and
+# observer GUI all use Ogre2 so the GUI receives the same rendered scene as the
+# camera. Software Mesa is explicit here because WSLg reports llvmpipe/COPY
+# MODE on this host; it is slower but avoids an empty accelerated context.
 export QT_QPA_PLATFORM="${QT_QPA_PLATFORM:-xcb}"
 export QT_X11_NO_MITSHM="${QT_X11_NO_MITSHM:-1}"
+export LIBGL_ALWAYS_SOFTWARE="${LIBGL_ALWAYS_SOFTWARE:-1}"
 unset WAYLAND_DISPLAY
 # Keep this stack separate from abandoned/default Gazebo Transport sessions.
 # The server, GUI, ArduPilot plugin, and camera subscriber inherit it.
@@ -86,11 +88,10 @@ gz topic -l 2>/dev/null | grep -q "/world/aeroinspect_inspection/" || {
 
 # The observer GUI is deliberately independent: a WSLg rendering failure is
 # logged in gui.log but cannot stop the server, SITL, live camera, or mission.
-# Unlike the old stock Ogre2 client, this compact Ogre config starts without a
-# GLX-context error on the installed WSLg COPY MODE renderer.
-GUI_CONFIG="${REPO_ROOT}/simulation/gazebo/gui/aeroinspect_ogre.gui.config"
-gz sim -g --render-engine-gui ogre \
-  --gui-config "${GUI_CONFIG}" >"${LOG_DIR}/gui.log" 2>&1 & GUI_PID=$!
+# Use the stock Harmonic configuration so its scene manager, camera controls,
+# and entity tree all attach to the Ogre2 world correctly.
+gz sim -g --render-engine-gui ogre2 \
+  --gui-config /usr/share/gz/gz-sim8/gui/gui.config >"${LOG_DIR}/gui.log" 2>&1 & GUI_PID=$!
 persist_pids
 SITL_BINARY="${SIM_HOME}/ardupilot/build/sitl/bin/arducopter"
 [[ -x "${SITL_BINARY}" ]] || {
