@@ -6,16 +6,16 @@
          ArduPilot SITL reports the 3 m inspection flight at Gazebo Z≈3 m. -->
     <pose>10 0 2 0 0 0</pose>
     <link name="wall_link">
-      <collision name="wall_collision"><geometry><box><size>0.25 7 4</size></box></geometry></collision>
+      <collision name="wall_collision"><geometry><box><size>0.25 24 4</size></box></geometry></collision>
       <visual name="concrete_backing">
-        <geometry><box><size>0.25 7 4</size></box></geometry>
+        <geometry><box><size>0.25 24 4</size></box></geometry>
         <material><diffuse>0.38 0.38 0.36 1</diffuse><specular>0.05 0.05 0.05 1</specular></material>
       </visual>
       <!-- Blank physical backing wall. The smaller front-mounted planes below
            are the only crack-photo materials visible to the camera. -->
       <visual name="inspection_facade">
         <pose>-0.16 0 1.0 0 0 0</pose>
-        <geometry><box><size>0.04 6.4 3.2</size></box></geometry>
+        <geometry><box><size>0.04 23.4 3.2</size></box></geometry>
         <material><ambient>0.78 0.72 0.62 1</ambient><diffuse>0.78 0.72 0.62 1</diffuse><emissive>0.30 0.26 0.20 1</emissive><specular>0.02 0.02 0.02 1</specular></material>
       </visual>
       <!-- The vehicle approaches from lower local X.  These planes sit 3.5 cm
