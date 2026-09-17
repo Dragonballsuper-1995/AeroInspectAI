@@ -98,3 +98,40 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outl
   .history-table tbody td:nth-child(3) { overflow-wrap: anywhere; }
   .table-footer { padding: 11px 13px; }
 }
+
+/* Evidence-first homepage and compact system viewport. */
+.overview-metrics { gap: 10px; margin-bottom: 10px; }
+.overview-metrics .metric-card { padding: 12px; }
+.overview-metrics .metric-card strong { font-size: 21px; }
+.overview-grid { gap: 10px; margin-bottom: 10px; }
+.overview-grid .panel { padding: 16px; }
+.overview-grid .panel-heading { margin-bottom: 12px; }
+.overview-grid .hero-visual { height: 220px; }
+.architecture-visual { background: #0d171e; }
+.architecture-diagram { display: block; height: 100%; object-fit: contain; width: 100%; }
+.overview-grid .hero-footer { gap: 20px; padding-top: 10px; }
+.overview-grid .detail { padding: 8px 0; }
+.overview-grid .model-name { padding-bottom: 10px; }
+
+@media (min-width: 801px) {
+  .system-banner { gap: 12px; margin-bottom: 10px; padding: 12px 14px; }
+  .system-banner p { line-height: 1.35; }
+  .system-orbit { height: 50px; margin-right: -8px; transform: scale(.82); transform-origin: left center; width: 50px; }
+  .system-layout { gap: 10px; }
+  .telemetry-panel, .simulation-frame-panel { padding: 16px; }
+  .telemetry-panel .panel-heading, .simulation-frame-panel .panel-heading { margin-bottom: 10px; }
+  .telemetry-panel .system-grid { gap: 8px; }
+  .telemetry-panel .system-card { padding: 10px; }
+  .telemetry-panel .system-card h3 { font-size: 12px; margin: 9px 0 3px; }
+  .telemetry-panel .system-card > strong { font-size: 10px; }
+  .telemetry-panel .system-card > small { font-size: 9px; }
+  .telemetry-panel .system-update { font-size: 8px; margin-top: 8px; padding-top: 6px; }
+  .simulation-frame-panel .simulation-frame-wrap { aspect-ratio: 16 / 8; }
+  .simulation-frame-panel .muted-copy { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; overflow: hidden; }
+  .simulation-frame-panel .text-button { margin-top: 6px; }
+}
+
+@media (min-width: 1181px) {
+  .telemetry-panel .system-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .telemetry-panel .system-update { display: none; }
+}
