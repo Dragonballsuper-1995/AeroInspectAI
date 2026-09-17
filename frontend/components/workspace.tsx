@@ -85,7 +85,7 @@ export function Workspace({ view, inspectionId }: { view: View; inspectionId?: s
     <div className="app-shell">
       <aside className={`sidebar ${mobileNav ? "sidebar-open" : ""}`}>
         <div className="brand">
-          <div className="brand-mark"><Navigation size={18} /></div>
+          <div className="brand-mark"><AeroMark size={21} /></div>
           <div><strong>AeroInspect</strong><span>AI CONSOLE</span></div>
           <button className="icon-button sidebar-close" aria-label="Close navigation" onClick={() => setMobileNav(false)}><X size={18} /></button>
         </div>
@@ -144,7 +144,7 @@ function PageHeader({ view, backendReady, onNew }: { view: View; backendReady: b
   };
   return (
     <div className="page-header">
-      <div><div className="eyebrow"><span className={`status-dot ${backendReady ? "ready" : "offline"}`} />{backendReady ? "MODEL CONNECTED" : "START BACKEND TO INSPECT"}</div><h1>{copy[view][0]}</h1><p>{copy[view][1]}</p></div>
+      <div>{view !== "dashboard" && <div className="eyebrow"><span className={`status-dot ${backendReady ? "ready" : "offline"}`} />{backendReady ? "MODEL CONNECTED" : "START BACKEND TO INSPECT"}</div>}<h1>{copy[view][0]}</h1><p>{copy[view][1]}</p></div>
       {(view === "dashboard" || view === "inspections") && <button className="button button-primary" onClick={onNew}><Plus size={17} />New inspection</button>}
     </div>
   );
@@ -164,7 +164,7 @@ function Dashboard({ system, router }: { system: SystemStatus | null; router: Re
       <MetricCard label="Compute" value={system?.compute.cuda_available ? "CUDA" : "CPU"} note={system?.compute.gpu_name ?? "Not connected"} icon={Cpu} accent="blue" />
     </div>
     <div className="dashboard-grid overview-grid">
-      <section className="panel hero-panel"><div className="panel-heading"><div><span className="section-kicker">Review workflow</span><h2>From simulated capture to model review</h2></div><span className="tag tag-green">Real inference</span></div><div className="hero-visual architecture-visual"><img className="architecture-diagram" src="/architecture/aeroinspect-review-workflow.svg" alt="AeroInspect architecture: simulated drone camera sends frames through FastAPI and YOLOv8n-Seg to an annotated review result." /></div><div className="hero-footer"><div><span className="tiny-label">Checkpoint</span><strong>EXP001 best.pt</strong></div><div><span className="tiny-label">Task</span><strong>Crack instance segmentation</strong></div><button className="button button-primary" onClick={() => router.push("/inspection/new")}>Run inspection <ArrowUpRight size={15} /></button></div></section>
+      <section className="panel hero-panel"><div className="panel-heading"><div><span className="section-kicker">Review workflow</span><h2>From simulated capture to model review</h2></div><span className="tag tag-green">Real inference</span></div><div className="hero-visual architecture-visual"><img className="architecture-diagram" src="/architecture-diagram.svg" alt="AeroInspect architecture: simulated drone camera sends frames through FastAPI and YOLOv8n-Seg to an annotated review result." /></div><div className="hero-footer"><div><span className="tiny-label">Checkpoint</span><strong>EXP001 best.pt</strong></div><div><span className="tiny-label">Task</span><strong>Crack instance segmentation</strong></div><button className="button button-primary" onClick={() => router.push("/inspection/new")}>Run inspection <ArrowUpRight size={15} /></button></div></section>
       <section className="panel model-card"><div className="panel-heading"><div><span className="section-kicker">Live deployment</span><h2>Current model</h2></div><span className={`tag ${system?.model.loaded ? "tag-green" : "tag-muted"}`}>{system?.model.loaded ? "Loaded" : "Offline"}</span></div><div className="model-name"><div className="model-symbol"><Cpu size={21} /></div><div><strong>{system?.model.name ?? "YOLOv8n-Seg"}</strong><span>EXP001 baseline checkpoint</span></div></div><div className="detail-list"><Detail label="Device" value={system?.compute.device ?? "Not connected"} /><Detail label="GPU" value={system?.compute.gpu_name ?? "Not connected"} /><Detail label="VRAM" value={system ? `${system.compute.vram_gb} GB` : "N/A"} /><Detail label="Classes" value={system ? Object.values(system.model.classes).join(", ") : "crack"} /></div></section>
     </div>
     <RecentInspections inspections={records.slice(0, 5)} router={router} />
@@ -333,7 +333,7 @@ function SystemPage({ system }: { system: SystemStatus | null }) {
   return <>
     {error && <ErrorBanner message={error} />}
     <div className="system-banner">
-      <div className="system-orbit"><div className="orbit-core"><Navigation size={26} /></div><span className="orbit-ring ring-one" /><span className="orbit-ring ring-two" /></div>
+      <div className="system-orbit"><div className="system-emblem"><AeroMark size={31} /></div></div>
       <div><span className="section-kicker">Gazebo + ArduPilot SITL</span><h2>{simulation?.detail ?? "Simulator status is loading."}</h2><p>Frames and telemetry shown here originate from the WSL controller. No values are synthesized by the dashboard.</p></div>
       {isRunning ? <button className="button button-quiet" disabled={busy} onClick={stopMission}><X size={15} />{busy ? "Requesting…" : "Abort & RTL"}</button> : <button className="button button-primary" disabled={!isReady || busy} onClick={requestMission}><Play size={15} />{busy ? "Queueing…" : "Start inspection mission"}</button>}
     </div>
@@ -372,6 +372,14 @@ function LiveImage({ label, src }: { label: string; src?: string }) {
 function SystemCard({ name, status, value, note, icon: Icon }: { name: string; status: string; value: string; note: string; icon: LucideIcon }) {
   const active = status === "Ready" || status === "running";
   return <div className="panel system-card"><div className="system-card-head"><div className="component-icon"><Icon size={18} /></div><span className={`tag ${active ? "tag-green" : status === "Offline" ? "tag-muted" : "tag-amber"}`}>{status}</span></div><h3>{name}</h3><strong>{value}</strong><small>{note}</small><div className="system-update"><Clock3 size={13} />{status === "Simulated" ? "SIMULATED DATA" : "Live local state"}</div></div>;
+}
+
+function AeroMark({ size = 21 }: { size?: number }) {
+  return <svg aria-hidden="true" className="aero-mark" height={size} viewBox="0 0 32 32" width={size}>
+    <path d="M7 7.5 25 4l-3.5 18L7 25.5l-3-4.5z" fill="none" stroke="currentColor" strokeLinejoin="round" strokeWidth="2" />
+    <path d="m10 21 4-6 3 2 5-8" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.25" />
+    <circle cx="14" cy="15" fill="currentColor" r="2" />
+  </svg>;
 }
 
 function MetricCard({ label, value, note, icon: Icon, accent = "green" }: { label: string; value: string; note: string; icon: LucideIcon; accent?: string }) { return <div className="metric-card"><div className={`metric-icon ${accent}`}><Icon size={18} /></div><span className="metric-label">{label}</span><strong>{value}</strong><small>{note}</small></div>; }

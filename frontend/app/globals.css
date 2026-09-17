@@ -108,10 +108,12 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outl
 .overview-grid .panel-heading { margin-bottom: 12px; }
 .overview-grid .hero-visual { height: 220px; }
 .architecture-visual { background: #0d171e; }
-.architecture-diagram { display: block; height: 100%; object-fit: contain; width: 100%; }
+.architecture-diagram { display: block; height: 100%; object-fit: cover; object-position: center top; width: 100%; }
 .overview-grid .hero-footer { gap: 20px; padding-top: 10px; }
 .overview-grid .detail { padding: 8px 0; }
 .overview-grid .model-name { padding-bottom: 10px; }
+.system-emblem { align-items: center; background: var(--blue-soft); border: 1px solid var(--blue); border-radius: 14px; color: var(--blue); display: flex; height: 50px; justify-content: center; width: 50px; }
+.aero-mark { display: block; }
 
 @media (min-width: 801px) {
   .system-banner { gap: 12px; margin-bottom: 10px; padding: 12px 14px; }
@@ -121,6 +123,8 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outl
   .telemetry-panel, .simulation-frame-panel { padding: 16px; }
   .telemetry-panel .panel-heading, .simulation-frame-panel .panel-heading { margin-bottom: 10px; }
   .telemetry-panel .system-grid { gap: 8px; }
+  .telemetry-panel { display: flex; flex-direction: column; }
+  .telemetry-panel .system-grid { align-content: center; flex: 1; }
   .telemetry-panel .system-card { padding: 10px; }
   .telemetry-panel .system-card h3 { font-size: 12px; margin: 9px 0 3px; }
   .telemetry-panel .system-card > strong { font-size: 10px; }

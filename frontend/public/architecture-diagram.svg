@@ -1,0 +1,257 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="2280"
+     height="340"
+     viewBox="0 0 2280 340"
+     role="img"
+     aria-labelledby="title description">
+
+  <title id="title">AeroInspect review workflow</title>
+  <desc id="description">
+    Gazebo and ArduPilot SITL, onboard camera, FastAPI, YOLOv8n-Seg, and review
+    connected by clearly spaced arrows.
+  </desc>
+
+  <defs>
+
+    <!-- Shadow -->
+    <filter id="shadow"
+            x="-10%" y="-20%"
+            width="120%" height="150%">
+      <feDropShadow dx="0"
+                    dy="8"
+                    stdDeviation="9"
+                    flood-color="#020b12"
+                    flood-opacity=".35"/>
+    </filter>
+
+    <!-- Slightly larger arrowhead -->
+    <marker id="arrow"
+            markerWidth="15"
+            markerHeight="15"
+            refX="12.5"
+            refY="7.5"
+            orient="auto"
+            markerUnits="userSpaceOnUse">
+      <path d="M0 0 L15 7.5 L0 15 Z"
+            fill="#75c8ff"/>
+    </marker>
+
+    <style>
+      .title{
+        font:700 30px Arial,sans-serif;
+        fill:#f5f9fc;
+      }
+
+      .detail{
+        font:400 19px Arial,sans-serif;
+        fill:#bdd0de;
+      }
+
+      .badge{
+        font:700 14px Arial,sans-serif;
+        letter-spacing:1.2px;
+        fill:#8bf0c8;
+      }
+
+      .label{
+        font:700 17px Arial,sans-serif;
+        letter-spacing:.8px;
+        fill:#a9c8de;
+      }
+    </style>
+
+  </defs>
+
+
+  <!-- ================================================= -->
+  <!-- LABELS — CENTERED IN EACH 170px CONNECTOR         -->
+  <!-- ================================================= -->
+
+  <g class="label" text-anchor="middle">
+
+    <text x="415" y="180">CAPTURE</text>
+
+    <text x="885" y="180">FRAME UPLOAD</text>
+
+    <text x="1355" y="180">INFERENCE</text>
+
+    <text x="1825" y="180">SAVE RESULT</text>
+
+  </g>
+
+
+  <!-- ================================================= -->
+  <!-- CONNECTORS — 170px EACH                          -->
+  <!-- ================================================= -->
+
+  <g fill="none"
+     stroke="#75c8ff"
+     stroke-width="6"
+     stroke-linecap="round"
+     marker-end="url(#arrow)">
+
+    <!-- Box 1: 30–330 | Gap: 330–500 = 170px -->
+    <path d="M330 205 H500"/>
+
+    <!-- Box 2: 500–800 | Gap: 800–970 = 170px -->
+    <path d="M800 205 H970"/>
+
+    <!-- Box 3: 970–1270 | Gap: 1270–1440 = 170px -->
+    <path d="M1270 205 H1440"/>
+
+    <!-- Box 4: 1440–1740 | Gap: 1740–1910 = 170px -->
+    <path d="M1740 205 H1910"/>
+
+  </g>
+
+
+  <!-- ================================================= -->
+  <!-- BOXES                                             -->
+  <!-- ================================================= -->
+
+  <g filter="url(#shadow)">
+
+    <!-- Gazebo + SITL -->
+    <rect x="30"
+          y="105"
+          width="300"
+          height="165"
+          rx="20"
+          fill="#17334a"
+          stroke="#58b6f7"
+          stroke-width="3"/>
+
+    <!-- Onboard camera -->
+    <rect x="500"
+          y="105"
+          width="300"
+          height="165"
+          rx="20"
+          fill="#163849"
+          stroke="#69c8ff"
+          stroke-width="3"/>
+
+    <!-- FastAPI -->
+    <rect x="970"
+          y="105"
+          width="300"
+          height="165"
+          rx="20"
+          fill="#152e43"
+          stroke="#53e3a6"
+          stroke-width="3"/>
+
+    <!-- YOLO -->
+    <rect x="1440"
+          y="105"
+          width="300"
+          height="165"
+          rx="20"
+          fill="#2b2844"
+          stroke="#a78bfa"
+          stroke-width="3"/>
+
+    <!-- Review -->
+    <rect x="1910"
+          y="105"
+          width="300"
+          height="165"
+          rx="20"
+          fill="#173f34"
+          stroke="#53e3a6"
+          stroke-width="3"/>
+
+  </g>
+
+
+  <!-- ================================================= -->
+  <!-- CONTENT                                           -->
+  <!-- ================================================= -->
+
+  <g>
+
+    <!-- Gazebo + SITL -->
+    <text class="title" x="60" y="160">Gazebo + SITL</text>
+    <text class="detail" x="60" y="198">Simulated drone flight</text>
+
+    <rect x="60" y="220"
+          width="135" height="28"
+          rx="14"
+          fill="#0e5b44"/>
+
+    <circle cx="73" cy="234"
+            r="4.5"
+            fill="#61e3ae"/>
+
+    <text class="badge" x="86" y="239">CONNECTED</text>
+
+
+    <!-- Onboard camera -->
+    <text class="title" x="530" y="160">Onboard camera</text>
+    <text class="detail" x="530" y="198">Settled 640 × 480 frame</text>
+
+    <rect x="530" y="220"
+          width="110" height="28"
+          rx="14"
+          fill="#6d541a"/>
+
+    <circle cx="543" cy="234"
+            r="4.5"
+            fill="#f4c452"/>
+
+    <text class="badge"
+          x="556"
+          y="239"
+          fill="#ffd36b">CAPTURE</text>
+
+
+    <!-- FastAPI -->
+    <text class="title" x="1000" y="160">FastAPI</text>
+    <text class="detail" x="1000" y="198">Local inference service</text>
+
+    <rect x="1000" y="220"
+          width="90" height="28"
+          rx="14"
+          fill="#0e5b44"/>
+
+    <circle cx="1013" cy="234"
+            r="4.5"
+            fill="#61e3ae"/>
+
+    <text class="badge" x="1027" y="239">READY</text>
+
+
+    <!-- YOLO -->
+    <text class="title" x="1470" y="160">YOLOv8n-Seg</text>
+    <text class="detail" x="1470" y="198">EXP001 · masks + boxes</text>
+
+    <rect x="1470" y="220"
+          width="95" height="28"
+          rx="14"
+          fill="#235a45"/>
+
+    <circle cx="1483" cy="234"
+            r="4.5"
+            fill="#61e3ae"/>
+
+    <text class="badge" x="1497" y="239">EXP001</text>
+
+
+    <!-- Review -->
+    <text class="title" x="1940" y="160">Review</text>
+    <text class="detail" x="1940" y="198">Result + inspection history</text>
+
+    <rect x="1940" y="220"
+          width="90" height="28"
+          rx="14"
+          fill="#0e5b44"/>
+
+    <circle cx="1953" cy="234"
+            r="4.5"
+            fill="#61e3ae"/>
+
+    <text class="badge" x="1967" y="239">SAVED</text>
+
+  </g>
+
+</svg>

@@ -4,6 +4,16 @@ node_modules/
 frontend/node_modules/
 frontend/.next/
 .next/
+*.tsbuildinfo
+
+# Local configuration and deployment state
+.env
+.env.*
+!.env.example
+.vercel/
+.turbo/
+coverage/
+dist/
 
 # Runtime state, logs, caches, and generated uploads
 .aeroinspect/
@@ -14,9 +24,11 @@ simulation/logs/
 /logs/
 __pycache__/
 *.pyc
+*.log
 
 # Large/generated ML assets are preserved locally but not versioned here.
 datasets/
+experiments/
 runs/
 weights/
 audit_results/
