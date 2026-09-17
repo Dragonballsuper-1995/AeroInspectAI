@@ -1,12 +1,17 @@
 mission:
   takeoff_altitude_m: 3.0
-  approach_ned_m: [-2.0, 7.0, -3.0]
+  # One waypoint is aligned with one image panel. The 4 m spacing exceeds the
+  # camera's view at the 3 m stand-off distance, so a capture cannot include a
+  # neighbouring panel.
+  # Two metres from the wall makes the selected panel dominate the RGB frame
+  # while remaining clear of the wall collision volume at E=10 m.
+  approach_ned_m: [-8.0, 8.0, -3.0]
   inspection_waypoints_ned_m:
-    - [-2.0, 7.0, -3.0]
-    - [-1.0, 7.0, -3.0]
-    - [0.0, 7.0, -3.0]
-    - [1.0, 7.0, -3.0]
-    - [2.0, 7.0, -3.0]
+    - [-8.0, 8.0, -3.0]
+    - [-4.0, 8.0, -3.0]
+    - [0.0, 8.0, -3.0]
+    - [4.0, 8.0, -3.0]
+    - [8.0, 8.0, -3.0]
   yaw_degrees: 90.0
   arrival_radius_m: 0.65
   settle_seconds: 2.0

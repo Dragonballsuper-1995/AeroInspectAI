@@ -23,16 +23,16 @@ The installed package/repository revisions are written to `simulation/.installed
 1. Start FastAPI and Next.js with `START_AEROINSPECT.bat`. The bundled launcher exposes FastAPI to the WSL virtual network while the browser still uses `127.0.0.1`.
 2. Run `START_SIMULATION.bat` and wait for “MAVLink and camera connected”.
 3. Open **System** in the dashboard; its simulator status becomes `READY`.
-4. Select **Start inspection mission**. The controller arms, takes off to 3 m, visits five NED inspection points at `E=7`, captures one settled 640×480 JPEG per point, submits each to FastAPI, returns home, and confirms landing.
+4. Select **Start inspection mission**. The controller arms, takes off to 3 m, visits five NED inspection points at `E=8`, captures one settled 640×480 JPEG per point, submits each to FastAPI, returns home, and confirms landing.
 
-Every submitted capture is a fresh Gazebo Transport RGB frame from the drone's simulated camera. Five training-split crack images are used only as materials on physical panels mounted on the simulated wall; they are never uploaded directly as camera payloads. The rendered frame therefore includes the camera pose, wall geometry, lighting, and scene background. The held-out test split is never used.
+Every submitted capture is a fresh Gazebo Transport RGB frame from the drone's simulated camera. Five training-split crack images are used only as materials on physical panels mounted on the simulated wall; they are never uploaded directly as camera payloads. The panels are four metres apart and the mission has one aligned waypoint per panel, so each capture contains one panel rather than a collage. The rendered frame therefore includes the camera pose, wall geometry, lighting, and scene background. The held-out test split is never used.
 
 The dashboard never substitutes fake telemetry. When the stack is unavailable it shows `SIMULATION_UNAVAILABLE`; MAVLink, camera, backend, and inference failures appear as their explicit error codes.
 
-The launcher uses XWayland (`QT_QPA_PLATFORM=xcb`, `WAYLAND_DISPLAY` unset), Ogre2, and the stock Gazebo Harmonic GUI configuration. This avoids the blank viewport caused by the former incomplete Ogre1 GUI configuration. The System page also shows the latest rendered camera frame, live NED telemetry, mission state, and linked inspection record.
+The launcher uses XWayland (`QT_QPA_PLATFORM=xcb`, `WAYLAND_DISPLAY` unset). The server and simulated camera use Ogre2, while the separate observer window uses a lightweight Ogre GUI configuration. This avoids the stock Ogre2 GUI's `currentGLContext` failure seen in WSLg COPY MODE. The System page also shows the latest rendered camera frame, live NED telemetry, mission state, and linked inspection record.
 
 ## Validation and troubleshooting
 
 Before a custom mission, validate the stock vehicle with the official flow: launch a Gazebo Iris world, run `sim_vehicle.py -v ArduCopter -f gazebo-iris --model JSON`, then arm, guided takeoff, move, RTL, and land. Inspect `simulation/logs/gazebo.log`, `sitl.log`, `mavproxy.log`, and `controller.log` if the dashboard reports an error.
 
-For WSLg rendering, verify `glxinfo -B` and `gz sim --versions`. On a mirrored-network configuration where Windows localhost is not reachable from WSL, configure WSL networking according to the ArduPilot WSL documentation before starting the stack.
+For WSLg rendering, verify `glxinfo -B` and `gz sim --versions`. A `llvmpipe` renderer means WSLg is using software graphics; the observer window should still use the compatibility config, but the camera / inspection mission remains independent and continues headlessly if the window cannot render. If the GUI remains blank after this change, close all WSL sessions, run `wsl --shutdown` from Windows, reopen a local desktop session, and start the launchers again. On a mirrored-network configuration where Windows localhost is not reachable from WSL, configure WSL networking according to the ArduPilot WSL documentation before starting the stack.
