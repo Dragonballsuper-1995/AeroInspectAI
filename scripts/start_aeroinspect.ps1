@@ -80,6 +80,11 @@ if (Test-HttpEndpoint -Url $frontendUrl -RequiredText "AeroInspect") {
         throw "Frontend dependencies are missing. Run 'npm install' in the frontend folder first."
     }
     $nodeExe = (Get-Command node.exe -ErrorAction Stop).Source
+    $nextCacheDir = Join-Path $frontendDir ".next"
+    if (Test-Path -LiteralPath $nextCacheDir) {
+        Write-Host "[CLEAN] Removing the generated Next.js cache before starting dev server..."
+        Remove-Item -LiteralPath $nextCacheDir -Recurse -Force
+    }
 
     Write-Host "[START] Starting the Next.js frontend..."
     $frontendProcess = Start-Process -FilePath $nodeExe `
