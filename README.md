@@ -52,7 +52,7 @@ The backend uses the trained checkpoint:
 
 `experiments/exp001_yolov8n_seg/runs/baseline/weights/best.pt`
 
-This is the `EXP001` YOLOv8n-Seg baseline checkpoint (about 6.5 MiB). `backend/app/core/config.py` supplies this path by default, while `AEROINSPECT_MODEL_PATH` can override it. All `.pt` files are ignored, so deployment must provide the checkpoint separately through the target platform's artifact storage or image build.
+This is the `EXP001` YOLOv8n-Seg baseline checkpoint (about 6.5 MiB). It is versioned as the single runtime checkpoint so a fresh clone can run inference. `backend/app/core/config.py` supplies this path by default, while `AEROINSPECT_MODEL_PATH` can override it. Other checkpoints remain ignored.
 
 The root `yolov8n-seg.pt` file is a base Ultralytics weight and is not the checkpoint used by the inspection API.
 
@@ -71,7 +71,7 @@ The browser client must not point at `localhost` in production. Local file previ
 
 ### Hugging Face (backend)
 
-The FastAPI service can be hosted in a Hugging Face Docker Space or another Python container. Before deploying, provide `best.pt`, set `AEROINSPECT_MODEL_PATH` to its container path, expose the API port, and configure `AEROINSPECT_CORS_ORIGINS` for the Vercel origin. The current requirements include PyTorch, Ultralytics, OpenCV, and CUDA-oriented defaults; a CPU Space will run more slowly and may need a smaller runtime image.
+The FastAPI service can be hosted in a Hugging Face Docker Space or another Python container. The active `best.pt` checkpoint is included; set `AEROINSPECT_MODEL_PATH` only when using another container path, expose the API port, and configure `AEROINSPECT_CORS_ORIGINS` for the Vercel origin. The current requirements include PyTorch, Ultralytics, OpenCV, and CUDA-oriented defaults; a CPU Space will run more slowly and may need a smaller runtime image.
 
 The current inspection storage is filesystem-backed. A production deployment should use persistent volume/object storage for uploads, annotated results, and history instead of ephemeral container disk.
 

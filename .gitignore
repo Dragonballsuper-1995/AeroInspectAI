@@ -29,6 +29,15 @@ __pycache__/
 # Large/generated ML assets are preserved locally but not versioned here.
 datasets/
 experiments/
+# The active inference checkpoint is versioned so a fresh clone can run the
+# selected EXP001 model. Other experiment outputs and checkpoints stay local.
+!experiments/
+experiments/*
+!experiments/exp001_yolov8n_seg/
+!experiments/exp001_yolov8n_seg/runs/
+!experiments/exp001_yolov8n_seg/runs/baseline/
+!experiments/exp001_yolov8n_seg/runs/baseline/weights/
+!experiments/exp001_yolov8n_seg/runs/baseline/weights/best.pt
 runs/
 weights/
 audit_results/
